@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tisleev | Transforme sua Embalagem</title>
+    <meta name="description" content="Rótulos Sleeve termoencolhíveis: comunicação 360° que transforma embalagem em experiência e aumenta suas vendas.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0f172a',    // Slate 900
+                            primary: '#3b82f6', // Blue 500
+                            accent: '#f97316',  // Orange 500
+                            light: '#f8fafc',   // Slate 50
+                        }
+                    },
+                    backgroundImage: {
+                        'hero-pattern': "linear-gradient(to right bottom, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1620916566398-39f1143ab7be?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')",
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Styles for Animations */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-400 { animation-delay: 0.4s; }
+
+        /* Checkmark visual fix for table */
+        .check-icon { color: #22c55e; }
+        .x-icon { color: #ef4444; }
+
+        .slider-container-max-width {
+            width: 100%;
+            max-width: 800px; /* Limita a largura máxima do slider */
+            position: relative;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            height: 500px; /* Ajuste a altura conforme sua necessidade */
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            background-color: #e2e8f0;
+            touch-action: none; /* Impede scroll da tela ao arrastar no mobile */
+            user-select: none; /* Impede seleção de texto */
+            -webkit-user-select: none;
+        }
+
+        /* Camadas de Imagem */
+        .slider-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+
+        /* Camada Fundo (Direita / DEPOIS / Colorida) */
+        .layer-after {
+            /* URL da sua imagem Original/Final */
+            background-image: url('./assets/sleeve.png');
+            z-index: 1;
+        }
+
+        /* Camada Frente (Esquerda / ANTES / P&B) */
+        .layer-before {
+            /* URL da mesma imagem (ou da versão "Antes") */
+            background-image: url('./assets/without_sleeve.png');
+            
+            /* Filtros CSS para simular o efeito "sem rótulo" (Opcional se usar duas imagens diferentes) */
+            filter: grayscale(100%) brightness(115%) contrast(80%); 
+            
+            z-index: 2;
+            /* Define o corte inicial em 50% */
+            clip-path: inset(0 50% 0 0); 
+        }
+
+        /* Linha Vertical de Controle */
+        .slider-control-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%; /* Posição inicial */
+            width: 4px;
+            background: white;
+            z-index: 10;
+            transform: translateX(-50%);
+            cursor: ew-resize; /* Cursor de redimensionamento */
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        /* Botão Redondo no Centro */
+        .slider-control-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6; /* Cor do ícone */
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            z-index: 11;
+            pointer-events: none; /* O clique é capturado pela linha ou container */
+        }
+
+        /* Etiquetas (Badges) */
+        .slider-badge {
+            position: absolute;
+            bottom: 20px;
+            padding: 8px 16px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 20;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+        }
+        
+        .badge-before { left: 20px; }
+        .badge-after { right: 20px; background-color: #22c55e; }
+
+        /* Cursor ativo ao arrastar */
+        .cursor-ew-resize {
+            cursor: ew-resize !important;
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-800 bg-slate-50">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-sm shadow-md transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-brand-dark flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-brand-primary"></i>
+                TISLEEV
+            </a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#beneficios" class="text-slate-600 hover:text-brand-primary font-medium transition">Benefícios</a>
+                <a href="#comparativo" class="text-slate-600 hover:text-brand-primary font-medium transition">Comparativo</a>
+                <a href="#roi" class="text-slate-600 hover:text-brand-primary font-medium transition">Resultados</a>
+                <a href="#orcamento" class="bg-brand-accent hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-full transition shadow-lg transform hover:-translate-y-0.5">
+                    Solicitar Orçamento
+                </a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-brand-dark text-2xl focus:outline-none">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full">
+            <div class="flex flex-col p-4 space-y-4">
+                <a href="#beneficios" class="text-slate-600 font-medium block">Benefícios</a>
+                <a href="#comparativo" class="text-slate-600 font-medium block">Comparativo</a>
+                <a href="#roi" class="text-slate-600 font-medium block">Resultados</a>
+                <a href="#orcamento" class="text-brand-accent font-bold block">Solicitar Orçamento</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SEÇÃO 1: HERO (Primeiro Impacto) -->
+    <section id="home" class="relative min-h-screen flex items-center pt-24 pb-12 lg:pt-0 bg-hero-pattern bg-cover bg-center bg-no-repeat bg-fixed">
+        <div class="container mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+            
+            <!-- Copy Content -->
+            <div class="lg:w-1/2 text-white space-y-6 fade-in-up">
+                <span class="inline-block bg-brand-primary/20 text-brand-primary border border-brand-primary px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider backdrop-blur-sm">
+                    Inovação em Embalagens
+                </span>
+                <h1 class="text-5xl md:text-7xl lg:text-7xl font-extrabold leading-tight">
+                    Vista seu produto para <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-brand-primary">vender mais</span>.
+                </h1>
+                <p class="text-xl text-slate-300 leading-relaxed font-light">
+                    Rótulos Sleeve: comunicação 360° que transforma embalagem em experiência. Mais do que um rótulo, um investimento em visibilidade, diferenciação e vendas.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <a href="#orcamento" class="bg-brand-accent hover:bg-orange-600 text-white text-center font-bold py-4 px-8 rounded-lg shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        Solicite seu orçamento
+                    </a>
+                    <a href="#beneficios" class="border border-white/30 hover:bg-white/10 text-white text-center font-semibold py-4 px-8 rounded-lg transition flex items-center justify-center gap-2">
+                        Saiba mais <i class="fa-solid fa-arrow-down"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Lead Gen Form -->
+            <div class="lg:w-1/2 w-full max-w-md fade-in-up delay-200" id="orcamento">
+                <div class="bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-brand-accent">
+                    <h3 class="text-2xl font-bold text-brand-dark mb-2">Receba uma proposta</h3>
+                    <p class="text-slate-500 mb-6 text-sm">Descubra o melhor sleeve para o seu produto.</p>
+                    
+                    <form id="leadForm" onsubmit="handleSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nome completo</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                    <i class="fa-regular fa-user"></i>
+                                </span>
+                                <input type="text" required class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition" placeholder="Seu nome">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Empresa</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                    <i class="fa-regular fa-building"></i>
+                                </span>
+                                <input type="text" required class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition" placeholder="Nome da sua empresa">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Seu melhor e-mail.</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                    <i class="fa-regular fa-envelope"></i>
+                                </span>
+                                <input type="email" required class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition" placeholder="seu@email.com">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Quantidade estimada</label>
+                            <select class="w-full pl-4 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition bg-white">
+                                <option value="" disabled selected>Selecione a quantidade</option>
+                                <option value="Pequena">Até 1.000 unidades</option>
+                                <option value="Media">1.000 a 10.000 unidades</option>
+                                <option value="Grande">Acima de 10.000 unidades</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full bg-brand-primary hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transition duration-300 flex justify-center items-center gap-2 group">
+                            Solicitar Orçamento Gratuito
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                        
+                        <p class="text-xs text-slate-400 text-center mt-4">
+                            <i class="fa-solid fa-lock"></i> Seus dados estão seguros conosco.
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 2: BENEFÍCIO PRINCIPAL -->
+    <section id="beneficios" class="py-20 bg-slate-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-4">
+                <span class="text-brand-accent font-bold tracking-wider uppercase text-sm">Diferenciação Total</span>
+                <h2 class="text-4xl md:text-5xl font-bold text-brand-dark mt-2 mb-4">Um rótulo que <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-brand-primary">vende</span> por você — em 360 graus.</h2>
+            </div>
+
+            <!-- SLIDER ANTES E DEPOIS (CORRIGIDO) -->
+            <div class="max-w-4xl mx-auto p-2 mb-8">
+                <div class="text-center mb-6 pt-6">
+                    <p class="text-slate-600 text-xl mb-2">Veja como o rótulo sleeve transforma completamente o apelo visual do produto.</p>
+                    <p class="text-slate-300 text-sm">Arraste o controle para comparar o antes e depois.</p>
+                </div>
+                
+                <div class="slider-wrapper" id="sliderWrapper">
+                    <!-- Camada Fundo (Direita - Colorida) -->
+                    <div class="slider-layer layer-after">
+                        <span class="slider-badge badge-after">COM SLEEVE</span>
+                    </div>
+                    
+                    <!-- Camada Frente (Esquerda - P&B/Sem Rótulo) -->
+                    <!-- O clip-path desta camada será manipulado pelo JS -->
+                    <div class="slider-layer layer-before" id="layerBefore">
+                        <span class="slider-badge badge-before">SEM SLEEVE</span>
+                    </div>
+                    
+                    <!-- Linha de Controle -->
+                    <div class="slider-control-line" id="sliderControl">
+                        <div class="slider-control-button">
+                            <i class="fa-solid fa-arrows-left-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- Badges -->
+                
+                </div>
+            </div>
+
+            <div class="text-center max-w-4xl mx-auto mb-16">
+                <p class="text-slate-600 text-xl">
+                    O rótulo sleeve envolve totalmente o produto, criando uma área de comunicação completa. É a solução perfeita para marcas que querem contar sua história com impacto visual e coerência.
+                    <span class="text-brand-accent font-bold tracking-wider uppercase">Mais espaço para sua marca. Mais destaque. Mais vendas</span>.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-100 group">
+                    <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-brand-primary text-2xl mb-6 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-arrows-spin"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-dark mb-3">360° de Impacto Visual</h3>
+                    <p class="text-slate-600">Aproveite cada milímetro da embalagem. Mais área para design, informações legais e storytelling da sua marca.</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-100 group">
+                    <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center text-brand-accent text-2xl mb-6 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-dark mb-3">Comunicação Envolvente</h3>
+                    <p class="text-slate-600">Cores vibrantes e design contínuo que atraem o olhar na prateleira e comunicam qualidade superior.</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-100 group">
+                    <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-2xl mb-6 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-dark mb-3">Aplicação e Proteção</h3>
+                    <p class="text-slate-600">O filme termoencolhível protege a impressão contra arranhões e umidade, mantendo o produto impecável.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 3: COMPARATIVO -->
+    <section id="comparativo" class="py-20 bg-white">
+        <div class="container mx-auto px-6 flex flex-col lg:flex-row gap-12 items-center">
+            <div class="lg:w-1/2">
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-6">
+                    Diga adeus aos rótulos que desbotam, soltam ou enrugam.
+                </h2>
+                <p class="text-slate-600 text-lg mb-6">
+                    Diferente dos rótulos adesivos comuns, os sleeves são feitos com filme termoencolhível que se ajusta perfeitamente ao formato da embalagem — sem bolhas, sem rasgos, sem descolamento.
+                </p>
+                <p class="text-slate-600 text-lg mb-8">
+                    E o melhor: a impressão é protegida pelo próprio material (impressão interna), mantendo cores vivas e a aparência impecável até o fim do uso.
+                </p>
+                
+                <a href="#orcamento" class="text-brand-primary font-bold text-lg hover:text-blue-700 transition flex items-center gap-2">
+                    Fale com um especialista agora
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="lg:w-1/2 w-full">
+                <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-brand-dark text-white">
+                                <th class="p-4 md:p-6 font-semibold">Característica</th>
+                                <th class="p-4 md:p-6 font-semibold bg-slate-700">Rótulo Comum</th>
+                                <th class="p-4 md:p-6 font-bold bg-brand-accent">Rótulo Sleeve</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm md:text-base">
+                            <tr class="border-b border-slate-200">
+                                <td class="p-4 md:p-6 font-medium text-slate-700">Cobertura</td>
+                                <td class="p-4 md:p-6 text-slate-500">Parcial</td>
+                                <td class="p-4 md:p-6 font-bold text-brand-dark bg-orange-50">Total (360°)</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-4 md:p-6 font-medium text-slate-700">Durabilidade</td>
+                                <td class="p-4 md:p-6 text-slate-500">Média</td>
+                                <td class="p-4 md:p-6 font-bold text-brand-dark bg-orange-50">Alta</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-4 md:p-6 font-medium text-slate-700">Resistência (Umidade)</td>
+                                <td class="p-4 md:p-6 text-slate-500">Baixa <i class="fa-solid fa-droplet-slash ml-1 text-slate-400"></i></td>
+                                <td class="p-4 md:p-6 font-bold text-brand-dark bg-orange-50">Excelente <i class="fa-solid fa-droplet ml-1 text-blue-500"></i></td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-4 md:p-6 font-medium text-slate-700">Aparência</td>
+                                <td class="p-4 md:p-6 text-slate-500">Simples</td>
+                                <td class="p-4 md:p-6 font-bold text-brand-dark bg-orange-50">Premium ⭐</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 md:p-6 font-medium text-slate-700">Valor Percebido</td>
+                                <td class="p-4 md:p-6 text-slate-500">Padrão</td>
+                                <td class="p-4 md:p-6 font-bold text-brand-dark bg-orange-50">Alta Valorização</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 4: ROI (Resultados) -->
+    <section id="roi" class="py-20 bg-brand-dark text-white relative overflow-hidden">
+        <!-- Background detail -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-brand-primary opacity-10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-brand-accent opacity-10 rounded-full blur-3xl"></div>
+
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Rótulos que pagam o próprio investimento.</h2>
+            <p class="text-xl text-slate-300 max-w-3xl mx-auto mb-12">
+                Marcas que adotam o sleeve percebem o aumento imediato no valor percebido do produto — e, com isso, mais vendas. A embalagem é o primeiro vendedor da sua marca.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="p-6 border border-white/10 rounded-xl backdrop-blur-sm bg-white/5">
+                    <div class="text-4xl font-bold text-brand-accent mb-2">Posicionamento</div>
+                    <p class="text-slate-300">Eleve sua marca para a categoria Premium instantaneamente.</p>
+                </div>
+                <div class="p-6 border border-white/10 rounded-xl backdrop-blur-sm bg-white/5">
+                    <div class="text-4xl font-bold text-brand-primary mb-2">Diferenciação</div>
+                    <p class="text-slate-300">Destaque-se em uma prateleira cheia de concorrentes.</p>
+                </div>
+                <div class="p-6 border border-white/10 rounded-xl backdrop-blur-sm bg-white/5">
+                    <div class="text-4xl font-bold text-green-400 mb-2">Crescimento</div>
+                    <p class="text-slate-300">Atraia novos clientes através do apelo visual.</p>
+                </div>
+            </div>
+
+            <div class="bg-white/10 p-8 rounded-2xl inline-block max-w-2xl">
+                <h3 class="text-2xl font-bold mb-4">Investimento Real</h3>
+                <p class="text-lg italic mb-6">"Você não está apenas comprando um rótulo. Está investindo em posicionamento, diferenciação e crescimento."</p>
+                <a href="#orcamento" class="inline-block bg-brand-accent hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-full transition shadow-lg transform hover:scale-105">
+                    🔥 Receba uma proposta personalizada
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 5: PROVA SOCIAL -->
+    <!-- <section class="py-20 bg-slate-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Marcas que confiam em nossos sleeves</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto">
+                    Atendemos empresas que transformaram a aparência de seus produtos. São rótulos que resistem ao tempo, à umidade e aos desafios da prateleira.
+                </p>
+            </div> -->
+
+            <!-- Testimonial -->
+            <!-- <div class="max-w-4xl mx-auto bg-white p-10 rounded-2xl shadow-lg relative">
+                <i class="fa-solid fa-quote-left text-brand-primary/20 text-6xl absolute top-6 left-6"></i>
+                <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+                    <div class="w-24 h-24 bg-slate-200 rounded-full flex-shrink-0 overflow-hidden"> -->
+                        <!-- Placeholder user image -->
+                        <!-- <img src="https://ui-avatars.com/api/?name=Lucas+M&background=0D8ABC&color=fff" alt="Cliente" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-center md:text-left">
+                        <p class="text-xl text-slate-700 italic mb-4">
+                            "Depois que mudamos para sleeve, nossas embalagens se destacaram imediatamente no PDV. As vendas subiram e o retorno foi rápido. O acabamento é simplesmente superior a tudo que já usamos."
+                        </p>
+                        <div>
+                            <h4 class="font-bold text-brand-dark">Lucas M.</h4>
+                            <p class="text-slate-500 text-sm">Gerente de Marketing, Bebidas Premium</p>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- Client Logos (Placeholders) -->
+            <!-- <div class="mt-16 flex flex-wrap justify-center items-center gap-8 opacity-60 grayscale">
+                <div class="flex items-center gap-2 text-2xl font-bold text-slate-400"><i class="fa-solid fa-flask"></i> PHARMA</div>
+                <div class="flex items-center gap-2 text-2xl font-bold text-slate-400"><i class="fa-solid fa-wine-bottle"></i> DRINKS CO.</div>
+                <div class="flex items-center gap-2 text-2xl font-bold text-slate-400"><i class="fa-solid fa-pump-soap"></i> CLEAN.IT</div>
+                <div class="flex items-center gap-2 text-2xl font-bold text-slate-400"><i class="fa-solid fa-jar"></i> FOODS</div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- SEÇÃO 6: FECHAMENTO -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-5xl font-extrabold text-brand-dark mb-6">Seu produto merece mais do que um rótulo. <br><span class="text-brand-primary">Ele merece presença.</span></h2>
+            <p class="text-xl text-slate-600 max-w-2xl mx-auto mb-10">
+                Transforme sua embalagem em uma poderosa ferramenta de vendas. Solicite seu orçamento e descubra como os rótulos sleeve podem impulsionar sua marca.
+            </p>
+            <a href="#orcamento" class="bg-green-600 hover:bg-green-700 text-white text-xl font-bold py-4 px-10 rounded-lg shadow-xl transition transform hover:-translate-y-1 inline-flex items-center gap-3">
+                <i class="fa-brands fa-whatsapp"></i>
+                Quero um orçamento gratuito
+            </a>
+            <p class="mt-4 text-sm text-slate-500">Atendimento técnico especializado via WhatsApp. Respondemos em minutos.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="col-span-1 md:col-span-2">
+                <a href="#" class="text-2xl font-bold text-white flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-layer-group text-brand-primary"></i>
+                    TISLEEV
+                </a>
+                <p class="text-sm max-w-xs">
+                    Especialistas em impressão de alta qualidade e tecnologia termoencolhível para embalagens que vendem.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Links Rápidos</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#home" class="hover:text-brand-primary transition">Início</a></li>
+                    <li><a href="#beneficios" class="hover:text-brand-primary transition">Benefícios</a></li>
+                    <li><a href="#comparativo" class="hover:text-brand-primary transition">Comparativo</a></li>
+                    <li><a href="#roi" class="hover:text-brand-primary transition">Resultados</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Contato</h4>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-phone"></i> (11) 99999-9999</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-envelope"></i> contato@tisleev.com.br</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-location-dot"></i> São Paulo, SP</li>
+                </ul>
+            </div>
+        </div>
+        <div class="container mx-auto px-6 mt-12 pt-8 border-t border-slate-800 text-center text-sm">
+            &copy; 2023 Tisleev. Todos os direitos reservados.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Smooth Scroll for Anchor Links (Fallback for older browsers not supporting scroll-smooth)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                menu.classList.add('hidden'); // Close mobile menu on click
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Navbar Background Change on Scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg', 'bg-white');
+                navbar.classList.remove('bg-white/95');
+            } else {
+                navbar.classList.remove('shadow-lg', 'bg-white');
+                navbar.classList.add('bg-white/95');
+            }
+        });
+
+        // Form Handling Simulation
+        function handleSubmit(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+            btn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Enviado com Sucesso!';
+                btn.classList.remove('bg-brand-primary', 'hover:bg-blue-700');
+                btn.classList.add('bg-green-500');
+                
+                // Reset form after delay
+                setTimeout(() => {
+                    e.target.reset();
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.classList.add('bg-brand-primary', 'hover:bg-blue-700');
+                    btn.classList.remove('bg-green-500');
+                    alert("Obrigado! Entraremos em contato em breve.");
+                }, 2000);
+            }, 1500);
+        }
+    </script>
+    <!-- JAVASCRIPT DO SLIDER (Copie isso) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const wrapper = document.getElementById('sliderWrapper');
+            const layerBefore = document.getElementById('layerBefore');
+            const control = document.getElementById('sliderControl');
+
+            let isDragging = false;
+
+            // Função principal que atualiza o corte da imagem
+            function updateSliderPosition(clientX) {
+                const rect = wrapper.getBoundingClientRect();
+                let x = clientX - rect.left;
+
+                // Limites de segurança (não sair do container)
+                if (x < 0) x = 0;
+                if (x > rect.width) x = rect.width;
+
+                // Calcula a porcentagem (0 a 100)
+                const percentage = (x / rect.width) * 100;
+
+                // Move a linha branca
+                control.style.left = percentage + '%';
+
+                // Atualiza o "corte" da imagem de cima
+                // inset(top right bottom left) -> Cortamos a direita
+                layerBefore.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+            }
+
+            // Início do arrasto
+            function startDrag(e) {
+                isDragging = true;
+                wrapper.classList.add('cursor-ew-resize');
+                e.preventDefault(); // Evita seleção de texto ou scroll indesejado
+                
+                // Já atualiza a posição no primeiro clique
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                updateSliderPosition(clientX);
+            }
+
+            // Fim do arrasto
+            function stopDrag() {
+                isDragging = false;
+                wrapper.classList.remove('cursor-ew-resize');
+            }
+
+            // Durante o movimento
+            function handleMove(e) {
+                if (!isDragging) return;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                updateSliderPosition(clientX);
+            }
+
+            // Event Listeners (Mouse e Touch)
+            wrapper.addEventListener('mousedown', startDrag);
+            wrapper.addEventListener('touchstart', startDrag, {passive: false});
+
+            window.addEventListener('mouseup', stopDrag);
+            window.addEventListener('touchend', stopDrag);
+
+            window.addEventListener('mousemove', handleMove);
+            window.addEventListener('touchmove', handleMove, {passive: false});
+        });
+    </script>
+</body>
+</html>
