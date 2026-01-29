@@ -276,6 +276,7 @@
                     <p class="text-slate-500 mb-6 text-sm">Descubra o melhor sleeve para o seu produto.</p>
 
                     <form id="leadForm" onsubmit="handleSubmit(event)" class="space-y-4">
+
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Nome completo</label>
                             <div class="relative">
@@ -674,31 +675,51 @@
             }
         });
 
-        // Form Handling Simulation
-        function handleSubmit(e) {
+        // Form Handling
+        async function handleSubmit(e) {
             e.preventDefault();
+
+            const formData = new FormData(e.target);
+            formData.append("access_key", "b4fe98a4-7ca5-442f-8b52-d749106cd074");
+            formData.append("subject", "Lead de Contato Tisleev");
+
             const btn = e.target.querySelector('button');
             const originalText = btn.innerHTML;
 
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
             btn.disabled = true;
 
-            // Simulate API call
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> Enviado com Sucesso!';
-                btn.classList.remove('bg-brand-primary', 'hover:bg-blue-700');
-                btn.classList.add('bg-green-500');
+            try {
+                const response = await fetch("https://api.web3forms.com/submit", {
+                    method: "POST",
+                    body: formData
+                });
 
-                // Reset form after delay
-                setTimeout(() => {
-                    e.target.reset();
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    btn.classList.add('bg-brand-primary', 'hover:bg-blue-700');
-                    btn.classList.remove('bg-green-500');
+                const data = await response.json();
+
+                if (response.ok) {
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Enviado com Sucesso!';
+                    btn.classList.remove('bg-brand-primary', 'hover:bg-blue-700');
+                    btn.classList.add('bg-green-500');
+                    // btn.innerHTML = originalText;
+                    // btn.disabled = false;
+                    // btn.classList.add('bg-brand-primary', 'hover:bg-blue-700');
+                    // btn.classList.remove('bg-green-500');
                     alert("Obrigado! Entraremos em contato em breve.");
-                }, 2000);
-            }, 1500);
+
+                } else {
+                    console.error("Error: " + data.message);
+                }
+
+            } catch (error) {
+                alert("Alguma coisa deu errado. Tente novamente mais tarde.");
+            } finally {
+                e.target.reset();
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                btn.classList.add('bg-brand-primary', 'hover:bg-blue-700');
+                btn.classList.remove('bg-green-500');
+            }
         }
     </script>
     <!-- JAVASCRIPT DO SLIDER (Copie isso) -->
