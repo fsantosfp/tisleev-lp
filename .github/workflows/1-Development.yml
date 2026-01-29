@@ -1,0 +1,30 @@
+name: 1-PR-TO-DEV
+
+on:
+  push:
+    branches:
+      - 'feature/*'
+      - 'fix/*'
+
+jobs:
+  pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check and Create PR to Dev
+        run: |
+          # 1. Verifica se já existe um PR aberto da sua branch atual para a 'dev'
+          PR_EXISTS=$(gh pr list --head ${{ github.ref_name }} --base dev --state open --json number -q '.[0].number')
+          
+          if [ -z "$PR_EXISTS" ]; then
+            echo "Nenhum PR encontrado. Criando um novo para a branch dev..."
+            gh pr create --base dev --head ${{ github.ref_name }} \
+            --title "PR from ${{ github.ref_name }}" \
+            --body "Solicitação automática de merge para ambiente de testes em dev.tisleev.com.br."
+          else
+            echo "Um PR já está aberto (#$PR_EXISTS). Seu novo código foi adicionado a ele automaticamente."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
