@@ -1,20 +1,27 @@
-name: Promote Dev to Main after Deploy
+name: Promote Dev to Main
 on:
-  deployment_status: # Dispara quando um deploy muda de estado
+  deployment_status:
 
 jobs:
   open-pr-main:
-    # Só executa se o deploy foi na branch 'dev' e se foi um 'success'
     if: github.event.deployment_status.state == 'success' && github.event.deployment.ref == 'dev'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create PR to Main
+      - name: Check and Create PR to Main
         run: |
-          gh pr create --base main --head dev \
-          --title "🚀 PROMOÇÃO: Dev para Main" \
-          --body "O deploy em dev.tisleev.com.br foi concluído com SUCESSO. Confira as alterações antes de aprovar o merge para produção."
+          # Verifica se já existe um PR aberto de dev para main
+          PR_EXISTS=$(gh pr list --head dev --base main --state open --json number -q '.[0].number')
+          
+          if [ -z "$PR_EXISTS" ]; then
+            echo "Criando novo PR para produção..."
+            gh pr create --base main --head dev \
+            --title "🚀 PROMOÇÃO: Dev para Main" \
+            --body "O deploy em dev.tisleev.com.br foi concluído com SUCESSO. Valide as alterações antes de aprovar o merge para o site oficial."
+          else
+            echo "PR para Main já está aberto (#$PR_EXISTS). O novo código já foi incluído nele."
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
