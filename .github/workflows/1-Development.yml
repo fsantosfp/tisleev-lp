@@ -1,0 +1,19 @@
+name: 1-PR-TO-DEV
+
+on:
+  push:
+    branches:
+      - feature/*
+      - fix/*
+
+jobs:
+  pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Create PR to Dev
+        run: gh pr create --base dev --head ${{ github.ref_name }} --title "PR from ${{ github.ref_name }}" --body "Solicitação automática de merge para ambiente de testes."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
