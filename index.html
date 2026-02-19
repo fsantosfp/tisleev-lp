@@ -8,6 +8,17 @@
     <meta name="description"
         content="Rótulos Sleeve termoencolhíveis: comunicação 360° que transforma embalagem em experiência e aumenta suas vendas.">
 
+    <!-- Google Tag Manager -->
+    <script>(function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-KQQXMV49');</script>
+    <!-- End Google Tag Manager -->
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -198,6 +209,11 @@
 
 <body class="font-sans text-slate-800 bg-slate-50">
 
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KQQXMV49" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
     <!-- Navigation -->
     <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-sm shadow-md transition-all duration-300" id="navbar">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -295,7 +311,7 @@
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                                     <i class="fa-regular fa-building"></i>
                                 </span>
-                                <input type="text" name="company" required
+                                <input type="text" name="company" id="companyInput" required
                                     class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition"
                                     placeholder="Nome da sua empresa">
                             </div>
@@ -712,6 +728,13 @@
                     btn.classList.remove('bg-brand-primary', 'hover:bg-blue-700');
                     btn.classList.add('bg-green-500');
                     alert("Obrigado! Entraremos em contato em breve.");
+
+                    window.dataLayer = window.dataLayer || [];
+                    window.dataLayer.push({
+                        'event': 'form_enviado',
+                        'quantidade_lead': document.getElementById('quantityInput').value,
+                        'empresa_lead': document.getElementById('companyInput').value
+                    });
 
                 } else {
                     console.error("Error: " + data.message);

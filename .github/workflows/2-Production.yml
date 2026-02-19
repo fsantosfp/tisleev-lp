@@ -4,7 +4,7 @@ on:
 
 jobs:
   open-pr-main:
-    if: github.event.deployment_status.state == 'success'
+    if: github.event.deployment_status.state == 'success' && github.event.deployment.environment != 'github-pages'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
