@@ -4,13 +4,42 @@ on:
 
 jobs:
   open-pr-main:
-    if: github.event.deployment_status.state == 'success' && github.event.deployment.ref == 'dev'
+    if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for valid comparisons
+
+      - name: Validate Deployment context
+        id: validate
+        run: |
+          echo "Debug Info:"
+          echo "Deployment Ref: ${{ github.event.deployment.ref }}"
+          echo "Deployment SHA: ${{ github.event.deployment.sha }}"
+          echo "Deployment Env: ${{ github.event.deployment.environment }}"
+          
+          # Check if the deployment ref is 'dev' directly
+          if [[ "${{ github.event.deployment.ref }}" == "dev" ]]; then
+            echo "is_dev=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # If ref is a SHA, check if it matches the tip of dev
+          git fetch origin dev
+          DEV_SHA=$(git rev-parse origin/dev)
+          
+          if [[ "${{ github.event.deployment.sha }}" == "$DEV_SHA" ]]; then
+             echo "is_dev=true" >> $GITHUB_OUTPUT
+             echo "Deployment SHA matches origin/dev."
+          else
+             echo "is_dev=false" >> $GITHUB_OUTPUT
+             echo "Deployment does not match dev branch."
+          fi
 
       - name: Check and Create PR to Main
+        if: steps.validate.outputs.is_dev == 'true'
         run: |
           # Verifica se já existe um PR aberto de dev para main
           PR_EXISTS=$(gh pr list --head dev --base main --state open --json number -q '.[0].number')
