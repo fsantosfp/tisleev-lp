@@ -311,7 +311,7 @@
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                                     <i class="fa-regular fa-building"></i>
                                 </span>
-                                <input type="text" name="company" required
+                                <input type="text" name="company" id="companyInput" required
                                     class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition"
                                     placeholder="Nome da sua empresa">
                             </div>
@@ -728,6 +728,13 @@
                     btn.classList.remove('bg-brand-primary', 'hover:bg-blue-700');
                     btn.classList.add('bg-green-500');
                     alert("Obrigado! Entraremos em contato em breve.");
+
+                    window.dataLayer = window.dataLayer || [];
+                    window.dataLayer.push({
+                        'event': 'form_enviado',
+                        'quantidade_lead': document.getElementById('quantityInput').value,
+                        'empresa_lead': document.getElementById('companyInput').value
+                    });
 
                 } else {
                     console.error("Error: " + data.message);
