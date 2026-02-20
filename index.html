@@ -331,7 +331,7 @@
 
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Quantidade estimada (Mínimo
-                                1.000)</label>
+                                5.000)</label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                                     <i class="fa-solid fa-boxes-stacked"></i>
@@ -772,10 +772,10 @@
 
             if (isNaN(numericValue)) return; // Don't validate empty or invalid if it's not a number yet
 
-            if (numericValue < 1000) {
-                alert("A quantidade mínima é de 1.000 unidades.");
+            if (numericValue < 5000) {
+                alert("A quantidade mínima é de 5.000 unidades.");
                 // Optionally reset to minimum or clear
-                input.value = "1.000";
+                input.value = "5.000";
                 // You could also add a visual error state class here
                 input.classList.add('border-red-500', 'focus:ring-red-500');
                 input.classList.remove('border-slate-300', 'focus:ring-brand-primary');
