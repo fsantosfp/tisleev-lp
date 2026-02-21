@@ -343,6 +343,82 @@
                             </div>
                         </div>
 
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Tipo de recipiente</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                    <i class="fa-solid fa-bottle-water"></i>
+                                </span>
+                                <select name="tipo_recipiente" required
+                                    class="w-full pl-10 pr-10 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition appearance-none bg-white">
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Plástico (PET)">Plástico (PET)</option>
+                                    <option value="Plástico (PVC)">Plástico (PVC)</option>
+                                    <option value="Vidro">Vidro</option>
+                                    <option value="Metais">Metais</option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Forma de aplicação</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                    <i class="fa-solid fa-hand-holding-hand"></i>
+                                </span>
+                                <select name="forma_aplicacao" required
+                                    class="w-full pl-10 pr-10 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition appearance-none bg-white">
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Manual">Manual</option>
+                                    <option value="Automática">Automática</option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Acabamentos</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                </span>
+                                <select name="acabamentos" required
+                                    class="w-full pl-10 pr-10 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition appearance-none bg-white">
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Verniz fosco">Verniz fosco</option>
+                                    <option value="Verniz brilhante">Verniz brilhante</option>
+                                    <option value="Coldstampin">Coldstampin</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Arte do rótulo</label>
+                            <div class="relative">
+                                <input type="file" name="arte_rotulo" id="arte_rotulo" accept="image/*" required
+                                    class="hidden"
+                                    onchange="document.getElementById('file-chosen').textContent = this.files[0] ? this.files[0].name : 'Nenhuma imagem selecionada'">
+                                <label for="arte_rotulo"
+                                    class="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-slate-300 hover:bg-slate-50 cursor-pointer transition outline-none focus:ring-2 focus:ring-brand-primary">
+                                    <span id="file-chosen" class="text-slate-500 truncate">Selecionar imagem...</span>
+                                    <span class="bg-slate-200 text-slate-700 px-3 py-1 rounded text-sm font-medium"><i
+                                            class="fa-solid fa-upload mr-1"></i> Upload</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <button type="submit"
                             class="w-full bg-brand-primary hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transition duration-300 flex justify-center items-center gap-2 group">
                             Solicitar Orçamento Gratuito
@@ -700,20 +776,53 @@
         async function handleSubmit(e) {
             e.preventDefault();
 
-            const formData = new FormData(e.target);
-            formData.append("access_key", "b4fe98a4-7ca5-442f-8b52-d749106cd074");
-            formData.append("subject", "Lead de Contato Tisleev");
-
-            const object = Object.fromEntries(formData);
-            const json = JSON.stringify(object);
-
-            const btn = e.target.querySelector('button');
+            const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.innerHTML;
 
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparando...';
             btn.disabled = true;
 
             try {
+                const form = e.target;
+                const fileInput = form.querySelector('input[type="file"]');
+                let imageUrl = '';
+
+                // Se houver arquivo selecionado, faz upload para o ImgBB primeiro
+                if (fileInput && fileInput.files.length > 0) {
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fazendo upload da arte...';
+                    const imgbbToken = 'f533073a6f5ad9a07021704211f25cdf';
+                    const imgFormData = new FormData();
+                    imgFormData.append('image', fileInput.files[0]);
+
+                    const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbToken}`, {
+                        method: 'POST',
+                        body: imgFormData
+                    });
+
+                    const imgbbData = await imgbbResponse.json();
+
+                    if (imgbbData.success) {
+                        imageUrl = imgbbData.data.url;
+                    } else {
+                        throw new Error('Falha no upload da imagem.');
+                    }
+                }
+
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando formulário...';
+
+                const formData = new FormData(form);
+                formData.append("access_key", "b4fe98a4-7ca5-442f-8b52-d749106cd074");
+                formData.append("subject", "Lead de Contato Tisleev");
+
+                // Removendo o input de arquivo do JSON e adicionando o link
+                formData.delete('arte_rotulo');
+                if (imageUrl) {
+                    formData.append('link_arte_rotulo', imageUrl);
+                }
+
+                const object = Object.fromEntries(formData);
+                const json = JSON.stringify(object);
+
                 const response = await fetch("https://api.web3forms.com/submit", {
                     method: "POST",
                     body: json,
@@ -743,9 +852,12 @@
                 }
 
             } catch (error) {
+                console.error(error);
                 alert("Alguma coisa deu errado. Tente novamente mais tarde.");
             } finally {
                 e.target.reset();
+                const fileChosen = document.getElementById('file-chosen');
+                if (fileChosen) fileChosen.textContent = 'Selecionar imagem...';
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 btn.classList.add('bg-brand-primary', 'hover:bg-blue-700');
