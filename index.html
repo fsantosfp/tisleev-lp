@@ -836,30 +836,26 @@
                 let imageUrl = '';
 
                 // Custom Validation: Check if image is selected
-                if (!fileInput || fileInput.files.length === 0) {
-                    showToast('Por favor, selecione uma imagem para a arte do rótulo.', 'error');
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    return; // Prevent submission
-                }
+                if (fileInput && fileInput.files.length > 0) {
+                    // Faz upload para o ImgBB primeiro
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fazendo upload da arte...';
+                    const imgbbToken = 'f533073a6f5ad9a07021704211f25cdf';
+                    const imgFormData = new FormData();
+                    imgFormData.append('image', fileInput.files[0]);
 
-                // Faz upload para o ImgBB primeiro
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fazendo upload da arte...';
-                const imgbbToken = 'f533073a6f5ad9a07021704211f25cdf';
-                const imgFormData = new FormData();
-                imgFormData.append('image', fileInput.files[0]);
+                    const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbToken}`, {
+                        method: 'POST',
+                        body: imgFormData
+                    });
 
-                const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbToken}`, {
-                    method: 'POST',
-                    body: imgFormData
-                });
+                    const imgbbData = await imgbbResponse.json();
 
-                const imgbbData = await imgbbResponse.json();
-
-                if (imgbbData.success) {
-                    imageUrl = imgbbData.data.url;
-                } else {
-                    throw new Error('Falha no upload da imagem.');
+                    if (imgbbData.success) {
+                        imageUrl = imgbbData.data.url;
+                    } else {
+                        throw new Error('Falha no upload da imagem.');
+                        return;
+                    }
                 }
 
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando formulário...';
