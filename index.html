@@ -407,8 +407,7 @@
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Arte do rótulo</label>
                             <div class="relative">
-                                <input type="file" name="arte_rotulo" id="arte_rotulo" accept="image/*" required
-                                    class="hidden"
+                                <input type="file" name="arte_rotulo" id="arte_rotulo" accept="image/*" class="hidden"
                                     onchange="document.getElementById('file-chosen').textContent = this.files[0] ? this.files[0].name : 'Nenhuma imagem selecionada'">
                                 <label for="arte_rotulo"
                                     class="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-slate-300 hover:bg-slate-50 cursor-pointer transition outline-none focus:ring-2 focus:ring-brand-primary">
@@ -739,8 +738,57 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
+    <!-- Toast Container -->
+    <div id="toast-container"
+        class="fixed top-5 md:top-10 right-5 md:right-10 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
     <!-- Scripts -->
     <script>
+        // Toast Notification System
+        function showToast(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+
+            toast.className = 'max-w-xs md:max-w-sm w-full bg-white p-4 rounded-xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-start gap-3 pointer-events-auto border-l-4';
+
+            if (type === 'success') {
+                toast.classList.add('border-green-500');
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-green-500 text-xl mt-0.5"></i><div class="flex-1"><h4 class="font-bold text-slate-800 mb-0.5">Sucesso!</h4><p class="text-sm text-slate-600">${message}</p></div>`;
+            } else if (type === 'warning') {
+                toast.classList.add('border-brand-accent');
+                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-brand-accent text-xl mt-0.5"></i><div class="flex-1"><h4 class="font-bold text-slate-800 mb-0.5">Aviso</h4><p class="text-sm text-slate-600">${message}</p></div>`;
+            } else {
+                toast.classList.add('border-red-500');
+                toast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500 text-xl mt-0.5"></i><div class="flex-1"><h4 class="font-bold text-slate-800 mb-0.5">Atenção</h4><p class="text-sm text-slate-600">${message}</p></div>`;
+            }
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'text-slate-400 hover:text-slate-600 transition ml-auto';
+            closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            closeBtn.onclick = () => removeToast(toast);
+            toast.appendChild(closeBtn);
+
+            container.appendChild(toast);
+
+            // Trigger reflow
+            void toast.offsetWidth;
+
+            toast.classList.remove('translate-x-full', 'opacity-0');
+
+            setTimeout(() => {
+                removeToast(toast);
+            }, 5000);
+        }
+
+        function removeToast(toast) {
+            toast.classList.add('opacity-0', 'translate-x-full');
+            setTimeout(() => {
+                if (toast.parentElement) toast.remove();
+            }, 300);
+        }
+
+
         // Mobile Menu Toggle
         const btn = document.getElementById('mobile-menu-btn');
         const menu = document.getElementById('mobile-menu');
@@ -787,8 +835,9 @@
                 const fileInput = form.querySelector('input[type="file"]');
                 let imageUrl = '';
 
-                // Se houver arquivo selecionado, faz upload para o ImgBB primeiro
+                // Custom Validation: Check if image is selected
                 if (fileInput && fileInput.files.length > 0) {
+                    // Faz upload para o ImgBB primeiro
                     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fazendo upload da arte...';
                     const imgbbToken = 'f533073a6f5ad9a07021704211f25cdf';
                     const imgFormData = new FormData();
@@ -805,6 +854,7 @@
                         imageUrl = imgbbData.data.url;
                     } else {
                         throw new Error('Falha no upload da imagem.');
+                        return;
                     }
                 }
 
@@ -838,7 +888,7 @@
                     btn.innerHTML = '<i class="fa-solid fa-check"></i> Enviado com Sucesso!';
                     btn.classList.remove('bg-brand-primary', 'hover:bg-blue-700');
                     btn.classList.add('bg-green-500');
-                    alert("Obrigado! Entraremos em contato em breve.");
+                    showToast("Obrigado! Entraremos em contato em breve.", "success");
 
                     window.dataLayer = window.dataLayer || [];
                     window.dataLayer.push({
@@ -853,7 +903,7 @@
 
             } catch (error) {
                 console.error(error);
-                alert("Alguma coisa deu errado. Tente novamente mais tarde.");
+                showToast("Alguma coisa deu errado. Tente novamente mais tarde.", "error");
             } finally {
                 e.target.reset();
                 const fileChosen = document.getElementById('file-chosen');
@@ -885,7 +935,7 @@
             if (isNaN(numericValue)) return; // Don't validate empty or invalid if it's not a number yet
 
             if (numericValue < 5000) {
-                alert("A quantidade mínima é de 5.000 unidades.");
+                showToast("A quantidade mínima é de 5.000 unidades.", "warning");
                 // Optionally reset to minimum or clear
                 input.value = "5.000";
                 // You could also add a visual error state class here
